@@ -67,6 +67,30 @@ class Experience:
         default_factory=lambda: ExperienceID(uuid4())
     )
 
+    # --- 结构化经验字段 ---
+
+    context: dict[str, Any] = field(
+        default_factory=dict
+    )
+    """goal, environment, tools, ..."""
+
+    actions: list[str] = field(
+        default_factory=list
+    )
+    """步骤序列"""
+
+    failures: list[str] = field(
+        default_factory=list
+    )
+    """失败记录"""
+
+    solution: str = ""
+    """解决方案"""
+
+    confidence: float = 0.0
+    """可信度 0.0 - 1.0"""
+
+    # --- 原有字段 ---
 
     lesson: str | None = None
 

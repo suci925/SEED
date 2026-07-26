@@ -57,6 +57,10 @@ from app.experience_engine.distiller import (
     ExperienceDistiller,
 )
 
+from app.experience_engine.learner import (
+    ExperienceLearner,
+)
+
 from app.experience_engine.loop import (
     EvolutionLoop,
 )
@@ -324,6 +328,9 @@ async def chat(request: ChatRequest):
             experience_distiller=ExperienceDistiller(
                 llm=llm,
                 vault=vault,
+            ),
+            experience_learner=ExperienceLearner(
+                llm=llm,
             ),
             evolution_loop=EvolutionLoop(
                 llm=llm,

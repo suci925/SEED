@@ -4,6 +4,8 @@ SQLite implementation of the Experience repository.
 
 from __future__ import annotations
 
+import json
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -54,6 +56,15 @@ class SQLiteExperienceRepository(ExperienceRepository):
         except (ValueError, AttributeError):
             exp_type = ExperienceType.INTERACTION
 
+        # Parse JSON fields safely
+        def _parse_json(val: str | None, default: Any = None) -> Any:
+            if not val:
+                return default
+            try:
+                return json.loads(val)
+            except (json.JSONDecodeError, TypeError):
+                return default
+
         return Experience(
             id=ExperienceID(model.id),
             owner_id=IdentityID(model.owner_id),
@@ -62,9 +73,18 @@ class SQLiteExperienceRepository(ExperienceRepository):
             experience_type=exp_type,
             lesson=model.lesson,
             created_at=model.created_at,
-            updated_at=getattr(
-                model, "updated_at", None
+            updated_at=getattr(model, "updated_at", None),
+            context=_parse_json(
+                getattr(model, "context_json", None), {}
             ),
+            actions=_parse_json(
+                getattr(model, "actions_json", None), []
+            ),
+            failures=_parse_json(
+                getattr(model, "failures_json", None), []
+            ),
+            solution=getattr(model, "solution", "") or "",
+            confidence=getattr(model, "confidence", 0.0) or 0.0,
         )
 
     @staticmethod
@@ -79,6 +99,17 @@ class SQLiteExperienceRepository(ExperienceRepository):
             lesson=experience.lesson,
             created_at=experience.created_at,
             updated_at=experience.updated_at,
+            context_json=json.dumps(
+                experience.context, ensure_ascii=False
+            ),
+            actions_json=json.dumps(
+                experience.actions, ensure_ascii=False
+            ),
+            failures_json=json.dumps(
+                experience.failures, ensure_ascii=False
+            ),
+            solution=experience.solution or "",
+            confidence=experience.confidence or 0.0,
         )
 
     # --------------------------------------------------

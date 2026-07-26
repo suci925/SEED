@@ -38,6 +38,10 @@ from app.experience_engine.distiller import (
     ExperienceDistiller,
 )
 
+from app.experience_engine.learner import (
+    ExperienceLearner,
+)
+
 from app.experience_engine.loop import (
     EvolutionLoop,
     EvolutionResult,
@@ -68,6 +72,7 @@ class AgentOrchestrator:
         search_pipeline: SearchPipeline | None = None,
         memory_manager: type[MemoryCoordinator] | None = None,
         experience_distiller: ExperienceDistiller | None = None,
+        experience_learner: ExperienceLearner | None = None,
         evolution_loop: EvolutionLoop | None = None,
         owner_id: IdentityID | None = None,
         system_prompt: str | None = None,
@@ -79,6 +84,7 @@ class AgentOrchestrator:
         self._web_search = web_search
         self._search_pipeline = search_pipeline
         self._distiller = experience_distiller
+        self._learner = experience_learner
         self._evolution_loop = evolution_loop
         self._owner_id = owner_id
         self._system_prompt = (
@@ -247,6 +253,27 @@ class AgentOrchestrator:
                 "elapsed_seconds": round(elapsed, 2),
             },
         )
+
+        # 5b. Enhance experience with structured learning
+        if self._learner is not None:
+            try:
+                structured = await self._learner.extract(
+                    user_message=message,
+                    assistant_reply=reply,
+                )
+                if structured is not None:
+                    exp.context = structured.context
+                    exp.actions = structured.actions
+                    exp.failures = structured.failures
+                    exp.solution = structured.solution
+                    exp.confidence = structured.confidence
+                    exp.experience_type = (
+                        ExperienceType.TASK
+                        if structured.actions
+                        else ExperienceType.INTERACTION
+                    )
+            except Exception:
+                pass
 
         await self._experience_repo.save(exp)
 
