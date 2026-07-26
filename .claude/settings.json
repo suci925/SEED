@@ -65,7 +65,8 @@
       "Bash(rm -rf \"c:/Users/30425/OneDrive/Desktop/SEED/backend/app/skill\")",
       "Bash(git commit -m '🧠 Three-Layer Memory: Episodic + Semantic + Procedural *)",
       "Bash(python -m alembic revision --autogenerate -m \"add structured experience fields\")",
-      "Bash(git commit -m '🔄 Reflection Engine 2.0 — Daily Growth Cycle *)"
+      "Bash(git commit -m '🔄 Reflection Engine 2.0 — Daily Growth Cycle *)",
+      "Bash(git commit -m '🌍 World Model — 用户世界状态模型 *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\30425\\OneDrive\\Desktop\\vault\\Preferences",

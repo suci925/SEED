@@ -69,6 +69,14 @@ from app.reflection.engine import (
     ReflectionEngine,
 )
 
+from app.personality.world_updater import (
+    WorldUpdater,
+)
+
+from app.personality.world_model import (
+    WorldModel,
+)
+
 from app.memory.procedural.manager import (
     SkillManager,
 )
@@ -243,6 +251,15 @@ async def get_graph(
     }
 
 
+@app.get("/world")
+async def get_world():
+    """View the current world model."""
+    if app_ctx.vault is None:
+        raise HTTPException(status_code=503, detail="Vault not loaded")
+    model = WorldModel(str(app_ctx.vault.path))
+    return {"world_model": model.data}
+
+
 @app.post("/evolution")
 async def trigger_evolution(owner_id: str = "default-user"):
     """Trigger a full evolution cycle manually."""
@@ -378,6 +395,10 @@ async def chat(request: ChatRequest):
             ),
             experience_learner=ExperienceLearner(
                 llm=llm,
+            ),
+            world_updater=WorldUpdater(
+                llm=llm,
+                vault_path=str(vault.path),
             ),
             evolution_loop=EvolutionLoop(
                 llm=llm,

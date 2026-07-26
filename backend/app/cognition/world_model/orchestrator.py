@@ -42,6 +42,10 @@ from app.experience_engine.learner import (
     ExperienceLearner,
 )
 
+from app.personality.world_updater import (
+    WorldUpdater,
+)
+
 from app.experience_engine.loop import (
     EvolutionLoop,
     EvolutionResult,
@@ -73,6 +77,7 @@ class AgentOrchestrator:
         memory_manager: type[MemoryCoordinator] | None = None,
         experience_distiller: ExperienceDistiller | None = None,
         experience_learner: ExperienceLearner | None = None,
+        world_updater: WorldUpdater | None = None,
         evolution_loop: EvolutionLoop | None = None,
         owner_id: IdentityID | None = None,
         system_prompt: str | None = None,
@@ -85,6 +90,7 @@ class AgentOrchestrator:
         self._search_pipeline = search_pipeline
         self._distiller = experience_distiller
         self._learner = experience_learner
+        self._world_updater = world_updater
         self._evolution_loop = evolution_loop
         self._owner_id = owner_id
         self._system_prompt = (
@@ -201,17 +207,19 @@ class AgentOrchestrator:
 
         reply = ""
 
+        system_prompt = self._build_prompt()
+
         try:
             if full_context:
                 reply = await self._llm.chat_with_context(
                     message,
                     context=full_context,
-                    system=self._system_prompt,
+                    system=system_prompt,
                 )
             else:
                 reply = await self._llm.chat_async(
                     message,
-                    system=self._system_prompt,
+                    system=system_prompt,
                 )
         except Exception as e:
             reply = (
@@ -235,7 +243,17 @@ class AgentOrchestrator:
 
         elapsed = time.monotonic() - start
 
-        # 5. Record the interaction as Experience
+        # 5. Update world model if state changed
+        if self._world_updater is not None:
+            try:
+                await self._world_updater.process_conversation(
+                    user_message=message,
+                    assistant_reply=reply,
+                )
+            except Exception:
+                pass
+
+        # 7. Record the interaction as Experience
         exp = Experience(
             owner_id=uid or IdentityID("unknown"),
             action=message,
@@ -358,6 +376,35 @@ class AgentOrchestrator:
             lines.append(f"{role}: {content}")
 
         return "\n".join(lines)
+
+    # --------------------------------------------------
+    # System Prompt with World Model
+    # --------------------------------------------------
+
+    def _build_prompt(self) -> str:
+        """Build system prompt with world model context."""
+        prompt = self._system_prompt
+
+        # Inject world model if available
+        if (
+            hasattr(self, "_world_updater")
+            and self._world_updater is not None
+        ):
+            try:
+                world_context = (
+                    self._world_updater._model.to_context()
+                )
+                if world_context.strip():
+                    prompt += (
+                        "\n\n"
+                        "------------------\n"
+                        f"{world_context}\n"
+                        "------------------\n"
+                    )
+            except Exception:
+                pass
+
+        return prompt
 
     # --------------------------------------------------
     # Default System Prompt
