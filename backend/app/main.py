@@ -17,6 +17,8 @@ sys.path.insert(0, str(BASE_DIR))
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from app.core.types import IdentityID
+
 from app.core.config import settings
 
 from app.infrastructure.llm.deepseek_client import (
@@ -29,6 +31,10 @@ from app.infrastructure.obsidian.vault import (
 
 from app.infrastructure.database.connection import (
     AsyncSessionFactory,
+)
+
+from app.infrastructure.repositories.sqlite_experience_repository import (
+    SQLiteExperienceRepository,
 )
 
 from app.infrastructure.repositories.sqlite_memory_repository import (
@@ -79,12 +85,14 @@ app_ctx = AppContext()
 async def lifespan(app: FastAPI):
     """Startup: initialise shared resources."""
 
-    vault_path = (
-        settings.OBSIDIAN_VAULT_PATH
-        or "c:/Users/30425/OneDrive/Desktop/vault"
-    )
+    if not settings.OBSIDIAN_VAULT_PATH:
+        raise RuntimeError(
+            "OBSIDIAN_VAULT_PATH not configured in .env"
+        )
 
-    vault = ObsidianVault(vault_path)
+    vault = ObsidianVault(
+        settings.OBSIDIAN_VAULT_PATH
+    )
 
     app_ctx.vault = vault
 
@@ -188,6 +196,34 @@ async def list_tags():
     return {"tags": app_ctx.vault.list_all_tags()}
 
 
+@app.get("/history")
+async def list_history(
+    limit: int = 20,
+    owner_id: str = "default-user",
+):
+    """View recent conversation history."""
+    async with AsyncSessionFactory() as session:
+        repo = SQLiteExperienceRepository(session)
+        results = await repo.list_by_owner(
+            IdentityID(owner_id),
+        )
+
+    return [
+        {
+            "action": e.action[:100],
+            "outcome": e.outcome.value,
+            "type": e.experience_type.value,
+            "lesson": e.lesson,
+            "created_at": (
+                e.created_at.isoformat()
+                if e.created_at
+                else None
+            ),
+        }
+        for e in results[:limit]
+    ]
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """Send a message to the Seed agent."""
@@ -217,20 +253,13 @@ async def chat(request: ChatRequest):
                 detail="Vault not loaded",
             )
 
-        # 每个请求创建独立 session
-        session = AsyncSessionFactory()
-
         web_search = WebSearchService()
 
         app_ctx.agent = AgentOrchestrator(
             llm=llm,
             vault=vault,
-            memory_repo=SQLiteMemoryRepository(
-                session,
-            ),
-            experience_repo=SQLiteExperienceRepository(
-                session,
-            ),
+            memory_repo=SQLiteMemoryRepository,
+            experience_repo=SQLiteExperienceRepository,
             web_search=web_search,
             search_pipeline=SearchPipeline(
                 vault=vault,
@@ -243,9 +272,12 @@ async def chat(request: ChatRequest):
             ),
         )
 
-    result = await app_ctx.agent.process_message(
-        message=request.message,
-    )
+    # 每个请求创建独立 session
+    async with AsyncSessionFactory() as session:
+        result = await app_ctx.agent.process_message(
+            message=request.message,
+            session=session,
+        )
 
     return ChatResponse(
         reply=result.reply,

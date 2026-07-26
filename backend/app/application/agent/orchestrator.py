@@ -26,27 +26,16 @@ from app.infrastructure.obsidian.vault import (
     ObsidianVault,
 )
 
-from app.application.repositories.memory_repository import (
-    MemoryRepository,
-)
-
-from app.application.repositories.experience_repository import (
-    ExperienceRepository,
-)
-
 from app.application.memory.manager import (
     MemoryManager,
-    MemoryManagerResult,
 )
 
 from app.application.search.pipeline import (
     SearchPipeline,
-    SearchResult,
 )
 
 from app.application.experience.distiller import (
     ExperienceDistiller,
-    DistillationResult,
 )
 
 
@@ -67,34 +56,58 @@ class AgentOrchestrator:
         self,
         llm: DeepSeekClient,
         vault: ObsidianVault,
-        memory_repo: MemoryRepository,
-        experience_repo: ExperienceRepository,
         *,
+        memory_repo: type[MemoryRepository] | None = None,
+        experience_repo: type[ExperienceRepository] | None = None,
         web_search: WebSearchService | None = None,
         search_pipeline: SearchPipeline | None = None,
-        memory_manager: MemoryManager | None = None,
+        memory_manager: type[MemoryManager] | None = None,
         experience_distiller: ExperienceDistiller | None = None,
         owner_id: IdentityID | None = None,
         system_prompt: str | None = None,
     ) -> None:
         self._llm = llm
         self._vault = vault
-        self._memory_repo = memory_repo
-        self._experience_repo = experience_repo
+        self._memory_repo_cls = memory_repo
+        self._experience_repo_cls = experience_repo
         self._web_search = web_search
-        self._search_pipeline = search_pipeline or SearchPipeline(
-            vault=vault,
-            web_search=web_search,
-        )
-        self._memory_manager = memory_manager or MemoryManager(
-            vault=vault,
-            memory_repo=memory_repo,
-        )
+        self._search_pipeline = search_pipeline
         self._distiller = experience_distiller
         self._owner_id = owner_id
         self._system_prompt = (
             system_prompt or self._default_system_prompt()
         )
+        self._memory_manager_cls = memory_manager
+        self._conversation_history: list[dict] = []
+
+    def _init_repos(self, session: Any) -> None:
+        """Per-request initialisation of repositories."""
+
+        from sqlalchemy.ext.asyncio import AsyncSession
+
+        memory_cls = self._memory_repo_cls
+        exp_cls = self._experience_repo_cls
+
+        if memory_cls:
+            self._memory_repo = memory_cls(session)
+        if exp_cls:
+            self._experience_repo = exp_cls(session)
+
+        if self._search_pipeline is None:
+            self._search_pipeline = SearchPipeline(
+                vault=self._vault,
+                web_search=self._web_search,
+            )
+
+        if memory_cls and hasattr(self, '_memory_repo'):
+            self._memory_manager = (
+                self._memory_manager_cls or MemoryManager
+            )(
+                vault=self._vault,
+                memory_repo=self._memory_repo,
+            )
+        else:
+            self._memory_manager = None
 
     # --------------------------------------------------
     # Public API
@@ -107,16 +120,25 @@ class AgentOrchestrator:
         self,
         message: str,
         *,
+        session: Any = None,
         owner_id: IdentityID | None = None,
     ) -> AgentResponse:
         """
         Process a user message end-to-end.
 
-        Returns the agent's response and any
-        side effects (saved memories, etc.).
+        Args:
+            message: User's input text.
+            session: SQLAlchemy AsyncSession (per-request).
+            owner_id: Optional identity owner.
+
+        Returns:
+            AgentResponse with reply and metadata.
         """
 
         uid = owner_id or self._owner_id
+
+        # Init per-request repositories
+        self._init_repos(session)
 
         import time
         start = time.monotonic()
@@ -130,19 +152,58 @@ class AgentOrchestrator:
         context_notes = search_result.obsidian_notes
         combined_context = search_result.combined_context
 
-        # 4. Call DeepSeek
+        # 2. Build conversation-aware prompt
+        conv_context = self._build_conversation_context(
+            user_message=message,
+        )
+
+        # 3. Call LLM with full context
+        full_context = ""
+
+        if combined_context:
+            full_context += (
+                f"## 检索到的知识\n\n"
+                f"{combined_context}\n\n"
+            )
+
+        if conv_context:
+            full_context += (
+                f"## 对话历史\n\n"
+                f"{conv_context}\n\n"
+            )
+
         reply = ""
 
         try:
-            reply = await self._llm.chat_with_context(
-                message,
-                context=combined_context,
-                system=self._system_prompt,
-            )
+            if full_context:
+                reply = await self._llm.chat_with_context(
+                    message,
+                    context=full_context,
+                    system=self._system_prompt,
+                )
+            else:
+                reply = await self._llm.chat_async(
+                    message,
+                    system=self._system_prompt,
+                )
         except Exception as e:
             reply = (
                 "抱歉，我暂时无法连接到 AI 服务。"
                 f"错误: {type(e).__name__}"
+            )
+
+        # 4. Track conversation history (keep last 6 turns)
+        self._conversation_history.append({
+            "role": "user",
+            "content": message,
+        })
+        self._conversation_history.append({
+            "role": "assistant",
+            "content": reply,
+        })
+        if len(self._conversation_history) > 12:
+            self._conversation_history = (
+                self._conversation_history[-12:]
             )
 
         elapsed = time.monotonic() - start
@@ -169,11 +230,17 @@ class AgentOrchestrator:
         await self._experience_repo.save(exp)
 
         # 6. Memory Manager: decide what to remember
-        mem_result = await self._memory_manager.process_exchange(
-            user_message=message,
-            assistant_reply=reply,
-            owner_id=uid or IdentityID("unknown"),
-        )
+        mem_category = "skip"
+        mem_importance = 0.0
+
+        if self._memory_manager is not None:
+            mem_result = await self._memory_manager.process_exchange(
+                user_message=message,
+                assistant_reply=reply,
+                owner_id=uid or IdentityID("unknown"),
+            )
+            mem_category = mem_result.category.value
+            mem_importance = mem_result.importance
 
         # 7. Experience Distiller: extract reusable lessons
         distill_result = None
@@ -188,10 +255,10 @@ class AgentOrchestrator:
             reply=reply,
             context_notes=len(context_notes),
             memory_saved=(
-                mem_result.category.value != "skip"
+                mem_category != "skip"
             ),
-            memory_category=mem_result.category.value,
-            memory_importance=mem_result.importance,
+            memory_category=mem_category,
+            memory_importance=mem_importance,
             experience_id=exp.id,
             experience_distilled=(
                 distill_result.distilled
@@ -199,6 +266,40 @@ class AgentOrchestrator:
                 else False
             ),
         )
+
+    # --------------------------------------------------
+    # Conversation Context
+    # --------------------------------------------------
+
+    def _build_conversation_context(
+        self,
+        user_message: str,
+        *,
+        max_turns: int = 6,
+    ) -> str:
+        """
+        Build recent conversation history context.
+
+        Helps the LLM remember what was discussed
+        in previous turns.
+        """
+
+        if not self._conversation_history:
+            return ""
+
+        # Get last N exchanges
+        recent = self._conversation_history[
+            -(max_turns * 2):
+        ]
+
+        lines: list[str] = []
+
+        for entry in recent:
+            role = "用户" if entry["role"] == "user" else "Seed"
+            content = entry["content"][:200]
+            lines.append(f"{role}: {content}")
+
+        return "\n".join(lines)
 
     # --------------------------------------------------
     # Default System Prompt
@@ -235,8 +336,13 @@ class AgentOrchestrator:
 1. 从你的 Obsidian 知识库中检索相关笔记
 2. 如果知识库没有足够信息，会自动上网搜索
 
-请基于检索到的知识回答问题。如果同时有
-本地知识和网络搜索结果，优先使用本地知识。"""
+请基于检索到的知识回答问题。
+
+## 对话记忆
+
+我会看到最近几轮的对话历史。
+请参考历史上下文来保持对话的连贯性。
+如果用户提到之前讨论过的话题，请基于历史记录回答。"""
 
 
 class AgentResponse:
