@@ -55,11 +55,20 @@
       "Bash(rm -rf app/infrastructure/obsidian app/infrastructure/vector/__pycache__)",
       "Bash(touch app/perception/__init__.py app/cognition/__init__.py app/action/__init__.py app/model_update/__init__.py app/personality/__init__.py)",
       "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" status --short)",
-      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🏗️ Restructure to Seed Core Architecture + Skill Learner *)"
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🏗️ Restructure to Seed Core Architecture + Skill Learner *)",
+      "Bash(mkdir -p \"c:/Users/30425/OneDrive/Desktop/SEED/backend/app/memory/episodic\" \\\\ *)",
+      "Bash(sed -i 's|from app\\\\.infrastructure\\\\.obsidian\\\\.graph|from app.memory.semantic.graph|g' app/perception/context/vault.py)",
+      "Bash(sed -i 's|from app\\\\.memory\\\\.manager import MemoryManager|from app.memory.coordinator import MemoryCoordinator|g' app/cognition/world_model/orchestrator.py)",
+      "Bash(sed -i 's|MemoryManager|MemoryCoordinator|g' app/cognition/world_model/orchestrator.py)",
+      "Bash(sed -i 's|from app\\\\.memory\\\\.semantic\\\\.graph import KnowledgeGraph|from app.memory.semantic.graph import KnowledgeGraph|g' app/experience_engine/loop.py)",
+      "Bash(sed -i 's|from app\\\\.cognition\\\\.world_model\\\\.graph|from app.memory.semantic.graph|g' app/experience_engine/loop.py)",
+      "Bash(rm -rf \"c:/Users/30425/OneDrive/Desktop/SEED/backend/app/skill\")",
+      "Bash(git commit -m '🧠 Three-Layer Memory: Episodic + Semantic + Procedural *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\30425\\OneDrive\\Desktop\\vault\\Preferences",
-      "c:\\Users\\30425\\OneDrive\\Desktop\\SEED\\backend\\app\\application"
+      "c:\\Users\\30425\\OneDrive\\Desktop\\SEED\\backend\\app\\application",
+      "c:\\Users\\30425\\OneDrive\\Desktop\\SEED\\backend\\app\\memory"
     ]
   }
 }

@@ -20,7 +20,7 @@ from app.perception.context.vault import (
     ObsidianVault,
 )
 
-from app.cognition.world_model.graph import (
+from app.memory.semantic.graph import (
     KnowledgeGraph,
 )
 

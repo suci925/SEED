@@ -14,7 +14,7 @@ from typing import Any
 from obsidian_parser import Vault as ObsidianVaultParser
 from obsidian_parser import Note
 
-from app.cognition.world_model.graph import (
+from app.memory.semantic.graph import (
     KnowledgeGraph,
 )
 

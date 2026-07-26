@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-from app.skill.base import (
+from app.memory.procedural.base import (
     Skill,
     SkillMetadata,
 )

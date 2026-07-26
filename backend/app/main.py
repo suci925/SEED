@@ -61,7 +61,7 @@ from app.experience_engine.loop import (
     EvolutionLoop,
 )
 
-from app.skill.manager import (
+from app.memory.procedural.manager import (
     SkillManager,
 )
 

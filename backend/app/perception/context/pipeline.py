@@ -16,7 +16,7 @@ from app.perception.context.vault import (
     ObsidianNote,
 )
 
-from app.cognition.world_model.graph import (
+from app.memory.semantic.graph import (
     KnowledgeGraph,
 )
 
@@ -25,8 +25,8 @@ from app.action.tool_system.web_search import (
     WebSearchResult,
 )
 
-from app.skill.manager import SkillManager
-from app.skill.base import Skill
+from app.memory.procedural.manager import SkillManager
+from app.memory.procedural.base import Skill
 
 
 @dataclass

@@ -26,8 +26,8 @@ from app.perception.context.vault import (
     ObsidianVault,
 )
 
-from app.memory.manager import (
-    MemoryManager,
+from app.memory.coordinator import (
+    MemoryCoordinator,
 )
 
 from app.perception.context.pipeline import (
@@ -66,7 +66,7 @@ class AgentOrchestrator:
         experience_repo: type[ExperienceRepository] | None = None,
         web_search: WebSearchService | None = None,
         search_pipeline: SearchPipeline | None = None,
-        memory_manager: type[MemoryManager] | None = None,
+        memory_manager: type[MemoryCoordinator] | None = None,
         experience_distiller: ExperienceDistiller | None = None,
         evolution_loop: EvolutionLoop | None = None,
         owner_id: IdentityID | None = None,
@@ -108,7 +108,7 @@ class AgentOrchestrator:
 
         if memory_cls and hasattr(self, '_memory_repo'):
             self._memory_manager = (
-                self._memory_manager_cls or MemoryManager
+                self._memory_manager_cls or MemoryCoordinator
             )(
                 vault=self._vault,
                 memory_repo=self._memory_repo,

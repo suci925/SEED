@@ -12,11 +12,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from app.cognition.world_model.embeddings import (
+from app.memory.semantic.embeddings import (
     EmbeddingEngine,
 )
 
-from app.cognition.world_model.relationship import (
+from app.memory.semantic.relationship import (
     RelationType,
     calculate_weight,
     get_initial_weight,
