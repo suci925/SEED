@@ -40,7 +40,9 @@
       "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" push)",
       "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔧 V1 polish: per-request session, conv context, history API *)",
       "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🧠 Obsidian Brain Upgrade: Knowledge Graph + Vector Relationships *)",
-      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔌 Multi-Provider LLM System *)"
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔌 Multi-Provider LLM System *)",
+      "Bash(python -m alembic revision --autogenerate -m \"add conversations goals tasks tables\")",
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🧹 V1 polish: 3 repos, migration, setup script *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\30425\\OneDrive\\Desktop\\vault\\Preferences"

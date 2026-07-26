@@ -202,3 +202,47 @@ class ExperienceModel(Base):
         default=None,
         onupdate=datetime.now(timezone.utc),
     )
+
+
+class ConversationModel(Base):
+    """Database model for Conversation."""
+
+    __tablename__ = "conversations"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, default=None, onupdate=datetime.now(timezone.utc))
+
+
+class GoalModel(Base):
+    """Database model for Goal."""
+
+    __tablename__ = "goals"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
+    priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, default=None, onupdate=datetime.now(timezone.utc))
+
+
+class TaskModel(Base):
+    """Database model for Task."""
+
+    __tablename__ = "tasks"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    goal_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    priority: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, default=None, onupdate=datetime.now(timezone.utc))
