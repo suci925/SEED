@@ -30,6 +30,10 @@ from app.memory.coordinator import (
     MemoryCoordinator,
 )
 
+from app.memory.router import (
+    MemoryRouter,
+)
+
 from app.perception.context.pipeline import (
     SearchPipeline,
 )
@@ -78,6 +82,7 @@ class AgentOrchestrator:
         experience_distiller: ExperienceDistiller | None = None,
         experience_learner: ExperienceLearner | None = None,
         world_updater: WorldUpdater | None = None,
+        memory_router: MemoryRouter | None = None,
         evolution_loop: EvolutionLoop | None = None,
         owner_id: IdentityID | None = None,
         system_prompt: str | None = None,
@@ -91,6 +96,7 @@ class AgentOrchestrator:
         self._distiller = experience_distiller
         self._learner = experience_learner
         self._world_updater = world_updater
+        self._memory_router = memory_router
         self._evolution_loop = evolution_loop
         self._owner_id = owner_id
         self._system_prompt = (
@@ -103,6 +109,10 @@ class AgentOrchestrator:
         """Per-request initialisation of repositories."""
 
         from sqlalchemy.ext.asyncio import AsyncSession
+
+        # Set session on memory router
+        if self._memory_router is not None:
+            self._memory_router.set_session(session)
 
         memory_cls = self._memory_repo_cls
         exp_cls = self._experience_repo_cls
@@ -227,7 +237,26 @@ class AgentOrchestrator:
                 f"错误: {type(e).__name__}"
             )
 
-        # 5. Track conversation history (keep last 6 turns)
+        # 5. Handle self-directed memory saves
+        # Agent can embed [SAVE:content] in its reply to auto-save
+        import re
+        save_matches = re.findall(
+            r'\[SAVE:(.*?)\]', reply
+        )
+        for save_content in save_matches:
+            try:
+                save_content = save_content.strip()
+                if save_content and self._memory_manager is not None:
+                    await self._memory_manager.process_exchange(
+                        user_message=save_content,
+                        assistant_reply="",
+                        owner_id=uid or IdentityID("unknown"),
+                    )
+            except Exception:
+                pass
+        reply = re.sub(r'\[SAVE:.*?\]', '', reply).strip()
+
+        # 6. Track conversation history (keep last 6 turns)
         self._conversation_history.append({
             "role": "user",
             "content": message,
@@ -426,14 +455,15 @@ class AgentOrchestrator:
 2. 回答基于检索到的相关知识，如果知识不足可以说明
 3. 保持简洁、有价值的回答
 
-## 记忆系统
+## 自驱记忆
 
-本系统具备自动记忆能力：
+你可以自己决定记住什么。
 
-- **偏好记忆**：当你表达喜好（"我喜欢X"）时，我会记住并存为偏好笔记
-- **知识记忆**：当学到新知识或解决问题时，会存入知识库
-- **经验记忆**：遇到坑或学到教训时，会记录经验笔记
-- 所有记忆自动存入你的 Obsidian 知识库
+在回答末尾加上 [SAVE:内容] 即可保存到长期记忆。
+例如：
+  建议使用 FastAPI 而不是 Flask。[SAVE:用户偏好 FastAPI 而非 Flask]
+
+保存的内容会自动分类（偏好/知识/经验）并存入 Obsidian。
 
 ## 知识检索
 

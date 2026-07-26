@@ -81,6 +81,10 @@ from app.memory.procedural.manager import (
     SkillManager,
 )
 
+from app.memory.router import (
+    MemoryRouter,
+)
+
 
 # --------------------------------------------------
 # Application State
@@ -377,12 +381,16 @@ async def chat(request: ChatRequest):
             )
 
         web_search = WebSearchService()
+        memory_router = MemoryRouter(
+            graph=vault.graph,
+        )
 
         app_ctx.agent = AgentOrchestrator(
             llm=llm,
             vault=vault,
             memory_repo=SQLiteMemoryRepository,
             experience_repo=SQLiteExperienceRepository,
+            memory_router=memory_router,
             web_search=web_search,
             search_pipeline=SearchPipeline(
                 vault=vault,

@@ -18,6 +18,14 @@ class SkillMetadata:
     keywords: list[str] = field(
         default_factory=list,
     )
+    depends_on: list[str] = field(
+        default_factory=list,
+    )
+    """Names of skills this skill depends on."""
+    composes: list[str] = field(
+        default_factory=list,
+    )
+    """Names of skills that can be composed from this one."""
 
 
 @dataclass

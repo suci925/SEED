@@ -1,11 +1,12 @@
 """
-Experience Learner — 从对话中提取结构化经验。
+Experience Learner — 从对话中提取经验卡片。
 
-每次对话后调用 LLM 分析，提取：
+受 MemGovern / SWE-Agent 启发，每次对话后提取：
+  - problem: 问题描述
   - context: 目标、环境
-  - actions: 执行步骤
-  - failures: 失败记录
+  - diagnosis: 根因分析
   - solution: 解决方案
+  - verification: 如何验证已解决
   - confidence: 可信度
 """
 
@@ -44,19 +45,20 @@ class ExperienceLearner:
             return None
 
         prompt = (
-            "从以下对话中提取结构化的经验。\n\n"
+            "从以下对话中提取一张经验卡片。\n\n"
             f"用户: {user_message}\n"
             f"助手: {assistant_reply}\n\n"
-            "如果这段对话包含问题解决过程，请用 JSON 返回：\n"
+            "如果包含问题解决过程，请用 JSON 返回：\n"
             "{\n"
+            '  "problem": "问题描述",\n'
             '  "context": {"goal": "目标", "environment": "环境"},'
             '\n'
-            '  "actions": ["步骤1", "步骤2"],\n'
-            '  "failures": ["失败1"],\n'
-            '  "solution": "最终解决方案",\n'
+            '  "diagnosis": "根因分析",\n'
+            '  "solution": "解决方案",\n'
+            '  "verification": "如何验证已解决",\n'
             '  "confidence": 0.85\n'
             "}\n\n"
-            "如果不包含值得记录的经验，只返回 null。\n"
+            "如果没有问题或解决方案，只返回 null。\n"
             "confidence 范围 0.0-1.0。"
         )
 

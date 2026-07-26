@@ -15,6 +15,8 @@ keywords:
   - django
   - flask
   - fastapi
+composes:
+  - fastapi-deploy
 ---
 
 ## Python 编码规范

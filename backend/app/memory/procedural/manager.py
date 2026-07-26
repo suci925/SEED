@@ -18,6 +18,10 @@ from app.memory.procedural.base import (
 )
 
 
+# Maximum depth for dependency resolution
+_MAX_CHAIN_DEPTH = 5
+
+
 class SkillManager:
     """
     Manages skill loading, matching, and retrieval.
@@ -214,20 +218,50 @@ class SkillManager:
 
         import os
 
-        # Look relative to project root (SEED/)
-        # File is at: backend/app/application/skills/manager.py
         project_root = Path(__file__).resolve().parents[4]
-
-        # Check backend/skills/ first (has actual content)
         backend_skills = project_root / "backend" / "skills"
-
         if backend_skills.is_dir():
             return backend_skills
-
-        # Fallback: SEED/skills/
         candidate = project_root / "skills"
-
         if candidate.is_dir():
             return candidate
-
         return backend_skills
+
+    # --------------------------------------------------
+    # Skill Composition
+    # --------------------------------------------------
+
+    def resolve_chain(self, skill_name: str, *, _depth: int = 0) -> list[Skill]:
+        """Resolve a skill and all its dependencies in order."""
+        if _depth > _MAX_CHAIN_DEPTH:
+            return []
+        skill = self.get_by_name(skill_name)
+        if skill is None:
+            return []
+        result: list[Skill] = []
+        seen: set[str] = set()
+        for dep_name in skill.metadata.depends_on:
+            if dep_name in seen:
+                continue
+            seen.add(dep_name)
+            for s in self.resolve_chain(dep_name, _depth=_depth + 1):
+                if s.metadata.name not in seen:
+                    result.append(s)
+                    seen.add(s.metadata.name)
+        if skill.metadata.name not in seen:
+            result.append(skill)
+        return result
+
+    def compose(self, skill_names: list[str]) -> str:
+        """Combine multiple skills into a single context block."""
+        seen: set[str] = set()
+        sections: list[str] = []
+        for name in skill_names:
+            for skill in self.resolve_chain(name):
+                if skill.metadata.name in seen:
+                    continue
+                seen.add(skill.metadata.name)
+                sections.append(f"### {skill.metadata.name}\n{skill.content[:500]}")
+        if not sections:
+            return ""
+        return "## 组合技能\n\n" + "\n\n---\n\n".join(sections)
