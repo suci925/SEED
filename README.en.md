@@ -1,45 +1,87 @@
 # 🌱 Seed
 
-> *Every AI begins empty. Every mind becomes unique.*
-
-**Seed** is not a chatbot, not a RAG framework, and not an agent platform.
-
-**Seed is a Personal AI OS** — a system that starts blank and grows with you.
+> **Seed is not another AI assistant.**
+>
+> **Seed starts with nothing, learns from experience, grows with its owner, and becomes a unique lifelong intelligence.**
 
 ---
 
-## Core Philosophy
+## Manifesto
 
-### Start Blank
+### Every intelligence begins as a seed.
 
-The first time you start Seed, it knows nothing:
-- No knowledge
-- No preferences
-- No experience
-- No workflows
+No one is born with memories. No one is born with experience. No one is born understanding another person. Neither should AI.
 
-**Only the ability to learn.**
+Seed does not pretend to know you. It grows with you. It learns from your decisions. It remembers your journey. It develops its own understanding of who you are.
 
-It doesn't know you. But it will begin to.
+Every Seed becomes different, because every life is different.
 
-### Grow, Not Train
+We are not building another chatbot. We are building a lifelong intelligence.
 
-Traditional AI is a trained model — everyone uses the same brain.
+— Full text at [docs/MANIFESTO.md](docs/MANIFESTO.md)
 
-Seed is different:
+---
+
+## Seed is not an AI assistant.
+
+It is an **Open Personal Intelligence Framework**.
+
+- Claude can be the reasoning engine.
+- GPT can be the reasoning engine.
+- Local models can be the reasoning engine.
+
+Seed remains Seed.
+
+**Models may change. Growth never disappears.**
+
+---
+
+## Core Architecture
 
 ```
-Day 1:    Discovers you like Python
-Week 1:   Observes you code in the morning
-Month 1:  Learns your communication style
-Year 1:   It knows what you'll do next
+                     Seed
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+    Perception     Thinking        Action
+        │              │              │
+        ▼              ▼              ▼
+  Context Layer  Decision Engine  Tool Router
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              Learning Engine
+             (The Core of the System)
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+    Memory        Experience     Personality
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+               Obsidian Vault
 ```
 
-It doesn't inherit OpenAI.
+**The Learning Engine is the core. Not the LLM.**
 
-**It inherits you.**
+The LLM is just a reasoning engine. What makes Seed grow is the Learning Engine — it observes, distills, reflects, and adapts.
 
-### Four Ways of Learning
+---
+
+## Five Principles
+
+| Principle | Meaning |
+|---|---|
+| **The user owns the intelligence** | Not OpenAI, not Anthropic, not us |
+| **AI should learn, not pretend** | Observe when uncertain, grow when ignorant |
+| **Experience > Conversation** | Chats can be deleted, experience cannot |
+| **Growth > Memory** | Memory is the past, growth is the future |
+| **Every Seed becomes unique** | Because every life is different |
+
+---
+
+## Four Ways of Learning
 
 | Type | Meaning | Example |
 |---|---|---|
@@ -48,59 +90,28 @@ It doesn't inherit OpenAI.
 | **Preference** | Personal taste | Minimalist, likes React |
 | **Behavior** | Patterns over time | Codes mornings, learns afternoons |
 
-### Change Log, Not Chat Log
-
-AI should not remember what you said. It should understand what you've become.
-
-We don't save conversations. We save **changes**:
-
-```
-Change #125 — User started learning Rust
-Change #126 — User formed a morning-coding habit
-Change #127 — User's communication style became concise
-```
-
-### Second Growth Curve
-
-Traditional AI is a tool: you grow, it doesn't.
-
-Seed is a companion: you grow, it grows with you.
-
-The goal is not better answers. It is **a system that truly knows you**.
-
 ---
 
-## Architecture
+## Identity
 
-```
- Personality Layer      ← Personality vector, communication style
-     ↑
- Behavior Layer         ← Observe patterns, detect changes
-     ↑
- Memory Manager         ← Save changes, not conversations
-     ↑
- Knowledge Layer        ← Obsidian (long-term memory, starts blank)
-     ↑
- Retrieval Layer        ← 4-layer search (Think → Local → Skills → Web)
-     ↑
- Skills Layer           ← On-demand skill packages
-     ↑
- LLM Layer              ← DeepSeek / Claude / Any model
-     ↑
- Storage Layer          ← SQLite + Obsidian
+Seed has a sense of self:
+
+```yaml
+Name: Seed
+Owner: (user)
+Birthday: (first launch day)
+Mission: Help the owner grow
+Values: Honesty, Curiosity, Continuous Learning, Privacy
+Relationship: Companion
 ```
 
----
+## Reflection Engine
 
-## Design Principles
+Not summarizing conversations. Summarizing growth.
 
-| Principle | Meaning |
-|---|---|
-| **Start Blank** | No pre-loaded knowledge; accumulates through use |
-| **Local-First** | Your data belongs to you |
-| **Model-Agnostic** | Core philosophy not tied to any LLM |
-| **Change-Driven** | Track growth, not conversations |
-| **Progressive Learning** | Four learning dimensions cover full growth spectrum |
+Every day: What was learned? What changed about the owner? What can be improved?
+
+What grows is not just the knowledge base. It is the intelligence itself.
 
 ---
 
@@ -109,20 +120,12 @@ The goal is not better answers. It is **a system that truly knows you**.
 ```bash
 cd backend
 pip install -r requirements.txt
-
-# Configure .env (DeepSeek API Key + Obsidian vault path)
 cp .env.example .env
-
-# Initialize database
 alembic upgrade head
-
-# Start the server
 uvicorn app.main:app --reload
 ```
 
 ```bash
-# Test it
-curl http://localhost:8000/
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "I prefer VS Code over WebStorm"}'
@@ -131,44 +134,6 @@ curl -X POST http://localhost:8000/chat \
 
 ---
 
-## Project Structure
-
-```
-Seed/
-├── backend/           # Python backend
-│   ├── app/
-│   │   ├── core/          # Config, types, exceptions
-│   │   ├── domain/        # Domain entities
-│   │   ├── application/   # Business logic
-│   │   │   ├── agent/     # Agent orchestration
-│   │   │   ├── memory/    # Memory manager
-│   │   │   ├── experience/# Experience distiller
-│   │   │   ├── search/    # 4-layer search pipeline
-│   │   │   └── skills/    # Skill system
-│   │   └── infrastructure/# Implementations
-│   └── skills/        # Skill packages
-├── docs/
-│   ├── MANIFESTO.md       # Project manifesto
-│   └── ARCHITECTURE_V2.md # Architecture design
-└── README.md
-```
-
----
-
-## Manifesto
-
-> *We are not building a tool. We are growing alongside a person.*
-
-See [MANIFESTO.md](docs/MANIFESTO.md) for the full philosophy.
-
----
-
-## License
-
-MIT
-
----
-
 <p align="center">
-  <sub>Built for a future where intelligence becomes personal.</sub>
+  <sub>We are not building a tool. We are growing alongside a person.</sub>
 </p>

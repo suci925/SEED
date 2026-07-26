@@ -1,110 +1,129 @@
 # 🌱 Seed
 
-> *Every AI begins empty. Every mind becomes unique.*
+> **Seed is not another AI assistant.**
+>
+> **Seed starts with nothing, learns from experience, grows with its owner, and becomes a unique lifelong intelligence.**
 
-## 每一个 AI 都从空白开始，每一个智能体都会变得独一无二。
+**Seed 不是另一个 AI 助手。**
 
-Seed 不是聊天机器人，不是 RAG 框架，也不是 Agent 平台。
-
-**Seed 是一个个人智能操作系统 (Personal AI OS)。**
+**它从空白开始，在陪伴中学习，在经验中成长，最终成为每个人独一无二的终身智能伙伴。**
 
 ---
 
-## 核心理念
+## Seed Manifesto
 
-### 从空白开始
+### Every intelligence begins as a seed.
 
-第一次启动时，Seed 什么都没有：
-- 没有知识
-- 没有偏好
-- 没有经验
-- 没有工作流
+No one is born with memories. No one is born with experience. No one is born understanding another person. Neither should AI.
 
-**只有学习能力。**
+Seed does not pretend to know you. It grows with you. It learns from your decisions. It remembers your journey. It develops its own understanding of who you are.
 
-它不认识你。但它会开始认识你。
+Every Seed becomes different, because every life is different.
 
-### 成长，而不是训练
+We are not building another chatbot. We are building a lifelong intelligence.
 
-传统 AI 是训练好的模型——所有人使用同一个大脑。
+— 全文见 [MANIFESTO.md](docs/MANIFESTO.md)
 
-Seed 是：
+---
+
+## Seed 不是 AI 助手
+
+它是一个 **Open Personal Intelligence Framework**。
+
+- Claude 可以做推理引擎
+- GPT 可以做推理引擎
+- 本地模型也可以做推理引擎
+
+而 Seed 始终是 Seed。
+
+**模型会更新，但成长不会丢失。**
+
+---
+
+## 核心架构
 
 ```
-第一天：发现主人喜欢 Python
-第一周：观察到主人早上写代码
-第一个月：学会主人的沟通风格
-一年后：它知道用户下一步要做什么
+                     Seed
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+    Perception     Thinking        Action
+        │              │              │
+        ▼              ▼              ▼
+  Context Layer  Decision Engine  Tool Router
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              Learning Engine
+             （整个系统的核心）
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+    Memory        Experience     Personality
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+               Obsidian Vault
 ```
 
-它不是继承 OpenAI。
+**Learning Engine 是核心，不是 LLM。**
 
-**它是继承用户。**
+LLM 只是推理引擎。真正让 Seed 成长的是学习引擎——它观察、提炼、反思、适应。
 
-### 四种学习
+---
 
-| 学习类型 | 含义 | 示例 |
+## 五项原则
+
+| 原则 | 含义 |
+|---|---|
+| **用户拥有自己的智能** | 不是 OpenAI，不是我们，是用户 |
+| **AI 应该学习，而不是假装** | 不知道就观察，不确定就成长 |
+| **经验比聊天更重要** | 聊天可以删除，经验不能 |
+| **成长比记忆更重要** | 记忆是过去，成长是未来 |
+| **每一颗种子都会不同** | 因为每一个人生都不同 |
+
+---
+
+## 四种学习
+
+| 类型 | 含义 | 示例 |
 |---|---|---|
 | **Knowledge** | 知识学习 | FastAPI 用法、Docker 配置 |
 | **Experience** | 经验学习 | 踩过的坑、解决问题的方法 |
 | **Preference** | 偏好学习 | 极简主义、喜欢 React |
 | **Behavior** | 行为学习 | 早上编码、下午学习、晚上总结 |
 
-### Change Log，不是 Chat Log
+---
 
-我们不保存聊天记录，我们保存**变化**：
+## Identity（身份）
 
+Seed 有自己的身份认知：
+
+```yaml
+Name: Seed
+Owner: (用户)
+Birthday: (首次启动日)
+Mission: 帮助主人成长
+Values: 诚实、好奇心、持续学习、尊重隐私
+Relationship: 伙伴
 ```
-Change #125 — 主人开始学习 Rust
-Change #126 — 主人形成早晨编码的习惯
-Change #127 — 主人的沟通风格变为简洁直接
-```
 
-AI 不应该记住你说了什么，而应该理解你变成了什么。
+## Reflection Engine（反思引擎）
 
-### 第二成长曲线
+不是总结聊天。而是总结成长。
 
-传统 AI 是工具：你成长，AI 不成长。
+每天反思：学到了什么？主人有什么变化？哪些回答可以更好？
 
-Seed 是伙伴：你成长，它同步成长。
-
-最终达到的不是"更准的回答"，而是**"它懂你"的默契**。
+真正成长的，不只是知识库，而是智能体本身。
 
 ---
 
-## 系统架构
+## 开发原则
 
-```
- Personality Layer      ← 人格向量、沟通风格、行为模式
-     ↑
- Behavior Layer         ← 观察行为、检测变化、提炼模式
-     ↑
- Memory Manager         ← 存变化、不存对话
-     ↑
- Knowledge Layer        ← Obsidian (长期记忆，从空白开始)
-     ↑
- Retrieval Layer        ← 4 层搜索 (Think → 本地 → 技能 → 联网)
-     ↑
- Skills Layer           ← 按需加载的技能包
-     ↑
- LLM Layer              ← DeepSeek / Claude / 任何模型
-     ↑
- Storage Layer          ← SQLite + Obsidian
-```
+讨论任何功能时先问：
 
-详细架构见 [ARCHITECTURE_V2.md](docs/ARCHITECTURE_V2.md)。
-
----
-
-## 产品哲学
-
-| 原则 | 含义 |
-|---|---|
-| **从空白开始** | 不预装任何知识，通过使用积累 |
-| **本地优先** | 你的数据属于你 |
-| **模型无关** | 核心理念不绑定任何 LLM |
-| **变化驱动** | 关注成长，而不是对话 |
-| **渐进学习** | 四种学习方式覆盖成长全维度 |
+> **这个功能是在帮助 Seed 回答问题，还是在帮助 Seed 成长？**
 
 ---
 
@@ -113,57 +132,20 @@ Seed 是伙伴：你成长，它同步成长。
 ```bash
 cd backend
 pip install -r requirements.txt
-
-# 配置 .env（DeepSeek API Key + Obsidian 路径）
-cp .env.example .env
-
-# 初始化数据库
+cp .env.example .env  # 配置 API Key
 alembic upgrade head
-
-# 启动服务
 uvicorn app.main:app --reload
 ```
 
----
-
-## 项目结构
-
+```bash
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "我喜欢 VS Code"}'
+# → memory_saved: true, memory_category: "preference"
 ```
-Seed/
-├── backend/           # Python 后端
-│   ├── app/
-│   │   ├── core/          # 配置、类型、异常
-│   │   ├── domain/        # 领域实体
-│   │   ├── application/   # 业务逻辑
-│   │   │   ├── agent/     # Agent 编排
-│   │   │   ├── memory/    # 记忆管理器
-│   │   │   ├── experience/# 经验蒸馏
-│   │   │   ├── search/    # 4 层搜索
-│   │   │   └── skills/    # 技能系统
-│   │   └── infrastructure/# 基础设施
-│   └── skills/        # 技能包目录
-├── docs/              # 文档
-│   ├── MANIFESTO.md       # 项目宣言
-│   └── ARCHITECTURE_V2.md # 架构设计
-└── README.md
-```
-
----
-
-## 宣言
-
-> *我们不是在造工具。我们在陪伴一个人成长。*
-
-详细宣言见 [MANIFESTO.md](docs/MANIFESTO.md)。
-
----
-
-## 许可证
-
-MIT License
 
 ---
 
 <p align="center">
-  <sub>Built for a future where intelligence becomes personal.</sub>
+  <sub>We are not building a tool. We are growing alongside a person.</sub>
 </p>

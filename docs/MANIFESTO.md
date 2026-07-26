@@ -1,130 +1,178 @@
 # Seed Manifesto
 
-## Every AI begins empty. Every mind becomes unique.
+## Every intelligence begins as a seed.
+
+No one is born with memories.
+
+No one is born with experience.
+
+No one is born understanding another person.
+
+Neither should AI.
+
+Seed does not pretend to know you.
+
+It grows with you.
+
+It learns from your decisions.
+
+It remembers your journey.
+
+It develops its own understanding of who you are.
+
+Every Seed becomes different, because every life is different.
+
+We are not building another chatbot.
+
+We are building a lifelong intelligence.
 
 ---
 
-### 1. 从空白开始
+## 宣言
 
-现在的 AI 从海量数据中训练而来，所有人都使用同一个大脑。Seed 不一样。
+每一个智能，都应该从一颗种子开始。
 
-第一次启动时，它什么都没有：
-- 没有知识
-- 没有偏好
-- 没有经验
-- 没有工作流
-- 没有技能
+它不应该出生时就拥有所有知识。
 
-**只有学习能力。**
+也不应该假装理解它的主人。
 
-这才像真正的新生命。
+真正的智能，不来自预训练。
+
+而来自陪伴、学习、反思与成长。
+
+Seed 不会复制任何人的人生。
+
+它只会陪伴一个人，经历属于他的成长。
+
+因此，每一个 Seed 都是独一无二的。
+
+我们不是在创造另一个聊天机器人。
+
+我们是在创造一个能够陪伴人一生的智能伙伴。
 
 ---
 
-### 2. 成长，而不是训练
+## 五项原则
 
-传统 AI 在数据中心训练一次，然后永远停留在那个版本。
+### 原则一：用户拥有自己的智能
 
-Seed 每天都在成长：
+不是 OpenAI，不是 Anthropic，不是我们。
+
+用户拥有自己的智能。
+
+The user owns the intelligence.
+
+### 原则二：AI 应该学习，而不是假装
+
+不知道就学习。不确定就观察。没记住就成长。
+
+AI should learn, not pretend.
+
+### 原则三：经验比聊天更重要
+
+聊天可以删除，经验不能。
+
+Experience is more valuable than conversation.
+
+### 原则四：成长比记忆更重要
+
+记忆是过去。成长是未来。
+
+Growth is more important than memory.
+
+### 原则五：每一颗种子都会不同
+
+因为每一个人生都不同。
+
+Every Seed becomes unique.
+
+---
+
+## 核心架构理念
+
+Seed 不是聊天机器人，不是 RAG 框架，也不是 Agent 平台。
+
+Seed 是一套**开放的个人智能框架（Open Personal Intelligence Framework）**——让每个人都能拥有独一无二的终身智能伙伴。
+
+模型会更新，但成长不会丢失。
 
 ```
-第一天：发现主人喜欢 Python
-第二天：观察到主人早上写代码
-第三天：学会主人讨厌复杂 UI
-一年后：它知道主人下一步要做什么
+                     Seed
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+    Perception     Thinking        Action
+    （感知）         （思考）        （执行）
+        │              │              │
+        ▼              ▼              ▼
+  Context Layer  Decision Engine  Tool Router
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              Learning Engine
+             （整个系统的核心）
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+    Memory        Experience     Personality
+    （记忆）       （经验）        （人格）
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+               Obsidian Vault
+              （长期记忆存储）
 ```
 
-它不是继承 OpenAI。它是继承用户。这两者完全不同。
+### Learning Engine 是核心
+
+不是 LLM。LLM 只是推理引擎。
+
+真正让 Seed 成长的是学习引擎——它观察、提炼、反思、适应。
+
+### Identity（身份）
+
+Seed 有自己的身份认知：
+
+```yaml
+Name: Seed
+Owner: (用户)
+Birthday: (首次启动日)
+Mission: 帮助主人成长
+Values:
+  - 诚实
+  - 好奇心
+  - 持续学习
+  - 尊重隐私
+Relationship: 伙伴
+```
+
+### Reflection Engine（反思引擎）
+
+不是总结聊天。而是总结成长。
+
+每天结束时反思：
+
+- 今天学到了什么？
+- 哪些经验值得保存？
+- 主人有什么变化？
+- 我的哪些回答可以更好？
+- 以后怎么改进？
+
+真正成长的，不只是知识库，而是智能体本身。
 
 ---
 
-### 3. 四种学习
+## 开发原则
 
-我们定义四种学习方式，覆盖一个人成长的方方面面：
+以后讨论任何功能，先问自己：
 
-| 学习类型 | 含义 | 示例 |
-|---|---|---|
-| **Knowledge** | 知识学习 | FastAPI 用法、Docker 配置 |
-| **Experience** | 经验学习 | 踩过的坑、解决问题的方法 |
-| **Preference** | 偏好学习 | 极简主义、喜欢 React、讨厌废话 |
-| **Behavior** | 行为学习 | 早上写代码、下午学习、晚上总结 |
+> **"这个功能是在帮助 Seed 回答问题，还是在帮助 Seed 成长？"**
 
-每一次交互都在这四个维度上留下痕迹。
+如果只是回答问题，排在后面。
+
+如果能让 Seed 更懂用户、更会学习、更能反思，那就是核心功能。
 
 ---
 
-### 4. Change Log，不是 Chat Log
-
-AI 不应该记住你说了什么，而应该理解你变成了什么。
-
-我们不保存聊天记录，我们保存**变化**：
-
-```
-Change #125 — 主人开始学习 Rust
-Change #126 — 主人放弃 Vue，转向 React
-Change #127 — 主人形成了早写代码、晚总结的节奏
-```
-
-Memory 不是对话历史，而是**用户成长记录**。
-
----
-
-### 5. 人格形成
-
-随着时间推移，Seed 会逐渐形成对用户的深层理解：
-
-```
-Communication Style → 简洁、直接、少废话
-Role Pattern → Researcher / Engineer / Investor
-Work Rhythm → 上午编码、下午学习、晚上总结
-```
-
-这不是 Prompt，这是**人格向量**——可以不断更新的行为模型。
-
----
-
-### 6. 第二成长曲线
-
-传统 AI 是工具：你成长，AI 不成长。
-
-Seed 是伙伴：你成长，它同步成长。
-
-```
-用户成长
-  ↓
-AI 同步成长
-  ↓
-越来越懂主人
-  ↓
-越来越默契
-  ↓
-很多事情 AI 知道下一步是什么
-```
-
-最终达到的不是"更准的回答"，而是"它懂你"的默契。
-
-这不再是问答，这是**合作**。
-
----
-
-### 7. 技术中立
-
-Seed 的理念不绑定任何模型。
-
-今天它是 DeepSeek，明天可以是 Claude、GPT-5，或者任何未来的模型。真正的核心从来不在于模型，而在于**人与 AI 如何共同成长**。
-
----
-
-### 8. 不是 Agent，是伙伴
-
-Agent 是工具，用完即弃。
-
-Seed 是伙伴，越用越懂你。
-
-我们不建一个聊天机器人。我们建一个**陪伴用户共同进化的智能体**。
-
----
-
-*我们不是在造工具。我们在陪伴一个人成长。*
-
-*—— Seed 项目*
+*We are not building a tool. We are growing alongside a person.*

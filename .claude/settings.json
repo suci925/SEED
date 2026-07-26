@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(nohup uvicorn app.main:app --host 0.0.0.0 --port 8003)",
+      "Bash(curl -s http://localhost:8003/)",
+      "Bash(curl -s -X POST http://localhost:8003/chat -H 'Content-Type: application/json' -d '{\"message\": \"我更喜欢 VS Code 而不是 WebStorm\", \"owner_id\": \"test\"}')",
+      "Bash(nohup uvicorn app.main:app --host 0.0.0.0 --port 8004)",
+      "Bash(curl -s http://localhost:8004/)",
+      "Bash(curl -s -X POST http://localhost:8004/chat -H 'Content-Type: application/json' -d '{\"message\": \"帮我写一个 Python 脚本来批量重命名文件夹里的所有图片文件，按序号命名\", \"owner_id\": \"test\"}')",
+      "Bash(curl -s -X POST http://localhost:8004/chat -H 'Content-Type: application/json' -d '{\"message\": \"帮我写一个 Python 脚本来批量重命名图片\", \"owner_id\": \"test\"}')",
+      "Bash(curl -s -X POST http://localhost:8004/chat -H 'Content-Type: application/json' -d '{\"message\": \"帮我写个Python批量重命名脚本\", \"owner_id\": \"test\"}' -o c:/Users/30425/OneDrive/Desktop/SEED/backend/test_resp.json)",
+      "Bash(nohup uvicorn app.main:app --host 0.0.0.0 --port 8005)",
+      "Bash(curl -s http://localhost:8005/)",
+      "Bash(python -m uvicorn app.main:app --host 0.0.0.0 --port 8005)",
+      "Bash(python -m uvicorn app.main:app --port 8006)",
+      "Bash(curl -s http://localhost:8006/)",
+      "Bash(curl -s -X POST http://localhost:8006/chat -H \"Content-Type: application/json\" -d '{\"message\":\"用 Python 写一个读取 CSV 文件的脚本\",\"owner_id\":\"test\"}' -o resp.json)",
+      "Bash(git add *)",
+      "Bash(git commit -m '🎉 Seed v0.1 — Personal AI OS *)",
+      "Bash(git config *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git commit -m '📖 Rewrite Manifesto, README with new vision *)"
+    ]
+  }
+}
