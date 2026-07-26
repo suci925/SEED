@@ -174,6 +174,16 @@ async def list_notes(
     else:
         results = app_ctx.vault.notes[:limit]
 
+    # Track view in knowledge graph
+    try:
+        graph = app_ctx.vault.graph
+        for n in results[:5]:
+            node_id = f"note:{n.name}"
+            graph.get_node(node_id)
+        graph.save()
+    except Exception:
+        pass
+
     return [
         {
             "name": n.name,
@@ -194,6 +204,35 @@ async def list_tags():
         )
 
     return {"tags": app_ctx.vault.list_all_tags()}
+
+
+@app.get("/graph")
+async def get_graph(
+    node_id: str | None = None,
+):
+    """View the knowledge graph."""
+    if app_ctx.vault is None:
+        raise HTTPException(status_code=503)
+
+    graph = app_ctx.vault.graph
+
+    if node_id:
+        related = graph.get_related(node_id)
+        return {
+            "node": graph.get_node(node_id),
+            "related": related,
+        }
+
+    return {
+        "nodes": graph.node_count,
+        "edges": graph.edge_count,
+        "node_list": [
+            {"id": nid, "path": n["path"]}
+            for nid, n in list(
+                graph._nodes.items()
+            )[:50]
+        ],
+    }
 
 
 @app.get("/history")

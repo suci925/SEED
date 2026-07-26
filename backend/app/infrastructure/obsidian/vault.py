@@ -14,6 +14,10 @@ from typing import Any
 from obsidian_parser import Vault as ObsidianVaultParser
 from obsidian_parser import Note
 
+from app.infrastructure.obsidian.graph import (
+    KnowledgeGraph,
+)
+
 
 class ObsidianNote:
     """
@@ -77,6 +81,7 @@ class ObsidianVault:
             )
 
         self._vault = ObsidianVaultParser(str(self._path))
+        self._graph: KnowledgeGraph | None = None
 
     # --------------------------------------------------
     # Properties
@@ -204,3 +209,30 @@ class ObsidianVault:
         rendered = self._vault.render_content(note_name)
 
         return rendered
+
+    # --------------------------------------------------
+    # Knowledge Graph
+    # --------------------------------------------------
+
+    @property
+    def graph(self) -> KnowledgeGraph:
+        """
+        Lazy-loaded knowledge graph for the vault.
+        """
+
+        if self._graph is None:
+            self._graph = KnowledgeGraph(
+                vault_path=self._path,
+            )
+            self._graph.load()
+
+        return self._graph
+
+    def get_graph(self) -> KnowledgeGraph:
+        """Explicit getter for the knowledge graph."""
+        return self.graph
+
+    def save_graph(self) -> None:
+        """Persist the knowledge graph."""
+        if self._graph is not None:
+            self._graph.save()

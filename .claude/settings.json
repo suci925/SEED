@@ -38,7 +38,8 @@
       "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" add -A)",
       "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" commit -m \"🔧 Polish V1: fix ExperienceRepository, add migration, clean test data\")",
       "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" push)",
-      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔧 V1 polish: per-request session, conv context, history API *)"
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔧 V1 polish: per-request session, conv context, history API *)",
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🧠 Obsidian Brain Upgrade: Knowledge Graph + Vector Relationships *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\30425\\OneDrive\\Desktop\\vault\\Preferences"

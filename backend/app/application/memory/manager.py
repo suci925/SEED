@@ -32,6 +32,14 @@ from app.infrastructure.obsidian.vault import (
     ObsidianVault,
 )
 
+from app.infrastructure.obsidian.graph import (
+    KnowledgeGraph,
+)
+
+from app.infrastructure.obsidian.relationship import (
+    RelationType,
+)
+
 
 class MemoryManager:
     """
@@ -246,7 +254,65 @@ class MemoryManager:
             encoding="utf-8",
         )
 
+        # Add to knowledge graph
+        self._add_to_graph(
+            note_path=note_path,
+            classification=classification,
+            content=frontmatter + body,
+        )
+
         return note_path
+
+    # --------------------------------------------------
+    # Knowledge Graph Integration
+    # --------------------------------------------------
+
+    def _add_to_graph(
+        self,
+        *,
+        note_path: Path,
+        classification: ClassificationResult,
+        content: str,
+    ) -> None:
+        """
+        Add a note to the knowledge graph with
+        embedding and relationships.
+        """
+
+        graph = self._vault.graph
+
+        # Use relative path from vault root
+        rel_path = str(
+            note_path.relative_to(self._vault.path)
+        )
+
+        node_id = f"{classification.category.value}:{note_path.stem}"
+
+        # Add node with embedding
+        graph.add_node(
+            node_id=node_id,
+            path=rel_path,
+            content=content,
+            node_type=classification.category.value,
+        )
+
+        # Create edges with all existing nodes
+        for existing_id, existing_node in list(
+            graph._nodes.items()
+        ):
+            if existing_id == node_id:
+                continue
+
+            graph.add_edge(
+                source=node_id,
+                target=existing_id,
+                rel_type=RelationType.RELATED,
+            )
+
+        # Update weights for the new node
+        graph.update_weights(node_id)
+
+        graph.save()
 
     @staticmethod
     def _safe_filename(text: str, max_len: int = 40) -> str:

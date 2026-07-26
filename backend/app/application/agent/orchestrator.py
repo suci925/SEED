@@ -152,7 +152,21 @@ class AgentOrchestrator:
         context_notes = search_result.obsidian_notes
         combined_context = search_result.combined_context
 
-        # 2. Build conversation-aware prompt
+        # 2. Update graph weights from this search
+        try:
+            graph = self._vault.graph
+            if graph.node_count > 0:
+                # Decay old weights
+                graph.decay_weights()
+                # Update access counts for found notes
+                for note in context_notes:
+                    node_id = f"note:{note.name}"
+                    graph.get_node(node_id)
+                graph.save()
+        except Exception:
+            pass
+
+        # 3. Build conversation-aware prompt
         conv_context = self._build_conversation_context(
             user_message=message,
         )
@@ -192,7 +206,7 @@ class AgentOrchestrator:
                 f"错误: {type(e).__name__}"
             )
 
-        # 4. Track conversation history (keep last 6 turns)
+        # 5. Track conversation history (keep last 6 turns)
         self._conversation_history.append({
             "role": "user",
             "content": message,
