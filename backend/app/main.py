@@ -21,11 +21,11 @@ from app.core.types import IdentityID
 
 from app.core.config import settings
 
-from app.infrastructure.llm.factory import (
+from app.cognition.world_model.factory import (
     create_llm_provider,
 )
 
-from app.infrastructure.obsidian.vault import (
+from app.perception.context.vault import (
     ObsidianVault,
 )
 
@@ -33,39 +33,35 @@ from app.infrastructure.database.connection import (
     AsyncSessionFactory,
 )
 
-from app.infrastructure.repositories.sqlite_experience_repository import (
+from app.memory.repositories.sqlite_experience_repository import (
     SQLiteExperienceRepository,
 )
 
-from app.infrastructure.repositories.sqlite_memory_repository import (
+from app.memory.repositories.sqlite_memory_repository import (
     SQLiteMemoryRepository,
 )
 
-from app.infrastructure.repositories.sqlite_experience_repository import (
-    SQLiteExperienceRepository,
-)
-
-from app.infrastructure.search.web_search import (
+from app.action.tool_system.web_search import (
     WebSearchService,
 )
 
-from app.application.agent.orchestrator import (
+from app.cognition.world_model.orchestrator import (
     AgentOrchestrator,
 )
 
-from app.application.search.pipeline import (
+from app.perception.context.pipeline import (
     SearchPipeline,
 )
 
-from app.application.experience.distiller import (
+from app.experience_engine.distiller import (
     ExperienceDistiller,
 )
 
-from app.application.evolution.loop import (
+from app.experience_engine.loop import (
     EvolutionLoop,
 )
 
-from app.application.skills.manager import (
+from app.skill.manager import (
     SkillManager,
 )
 

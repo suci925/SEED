@@ -44,7 +44,18 @@
       "Bash(python -m alembic revision --autogenerate -m \"add conversations goals tasks tables\")",
       "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🧹 V1 polish: 3 repos, migration, setup script *)",
       "Bash(mkdir -p \"c:/Users/30425/OneDrive/Desktop/SEED/backend/app/application/evolution\")",
-      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔄 Evolution Loop: Observe → Reflect → Consolidate → Adapt *)"
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🔄 Evolution Loop: Observe → Reflect → Consolidate → Adapt *)",
+      "Bash(git mv *)",
+      "Bash(mkdir -p app/memory/repositories/interfaces)",
+      "Bash(rm -rf app/application/agent app/application/memory app/application/experience app/application/evolution app/application/search app/application/skills app/application/services)",
+      "Bash(rm -rf app/application/__pycache__)",
+      "Bash(rm -rf app/infrastructure/search app/infrastructure/llm app/infrastructure/obsidian/__pycache__)",
+      "Bash(rm -rf app/infrastructure/repositories/__pycache__)",
+      "Bash(rm -rf app/application)",
+      "Bash(rm -rf app/infrastructure/obsidian app/infrastructure/vector/__pycache__)",
+      "Bash(touch app/perception/__init__.py app/cognition/__init__.py app/action/__init__.py app/model_update/__init__.py app/personality/__init__.py)",
+      "Bash(git -C \"c:/Users/30425/OneDrive/Desktop/SEED\" status --short)",
+      "Bash(git -C c:/Users/30425/OneDrive/Desktop/SEED commit -m '🏗️ Restructure to Seed Core Architecture + Skill Learner *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\30425\\OneDrive\\Desktop\\vault\\Preferences",
