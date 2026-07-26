@@ -65,6 +65,10 @@ from app.experience_engine.loop import (
     EvolutionLoop,
 )
 
+from app.reflection.engine import (
+    ReflectionEngine,
+)
+
 from app.memory.procedural.manager import (
     SkillManager,
 )
@@ -258,6 +262,49 @@ async def trigger_evolution(owner_id: str = "default-user"):
         "reflection_summary": result.reflection.summary if result.reflection else "",
         "patterns": result.reflection.patterns if result.reflection else [],
         "note_path": str(result.note_path) if result.note_path else None,
+    }
+
+
+@app.post("/reflect")
+async def daily_reflection(owner_id: str = "default-user"):
+    """Run a daily reflection cycle."""
+    if app_ctx.vault is None:
+        raise HTTPException(status_code=503, detail="Vault not loaded")
+    try:
+        llm = create_llm_provider()
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    async with AsyncSessionFactory() as session:
+        repo = SQLiteExperienceRepository(session)
+        experiences = await repo.list_by_owner(IdentityID(owner_id))
+
+        engine = ReflectionEngine(
+            llm=llm,
+            coordinator=None,
+            vault_path=app_ctx.vault.path,
+        )
+        result = await engine.run(
+            [{
+                "action": e.action,
+                "outcome": e.outcome.value,
+                "context": e.context,
+                "failures": e.failures,
+                "solution": e.solution,
+                "lesson": e.lesson,
+            } for e in experiences[:30]],
+        )
+
+    return {
+        "date": str(result.date),
+        "summary": result.summary,
+        "new_knowledge": result.new_knowledge,
+        "new_preferences": result.new_preferences,
+        "new_skills": result.new_skills,
+        "failure_patterns": result.failure_patterns,
+        "user_changes": result.user_changes,
+        "actions_taken": result.actions_taken,
+        "note_path": result.note_path,
     }
 
 
