@@ -178,6 +178,13 @@ class ExperienceModel(Base):
     )
 
 
+    experience_type: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default="interaction",
+    )
+
+
     lesson: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
@@ -187,4 +194,11 @@ class ExperienceModel(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc),
+    )
+
+
+    updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        default=None,
+        onupdate=datetime.now(timezone.utc),
     )

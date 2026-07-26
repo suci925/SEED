@@ -40,14 +40,31 @@ class SQLiteExperienceRepository(ExperienceRepository):
     @staticmethod
     def _to_domain(model: ExperienceModel) -> Experience:
         """Convert ORM model → domain entity."""
+
+        # Map stored values safely
+        try:
+            outcome = ExperienceOutcome(model.result)
+        except ValueError:
+            outcome = ExperienceOutcome.SUCCESS
+
+        try:
+            exp_type = ExperienceType(
+                model.experience_type
+            )
+        except (ValueError, AttributeError):
+            exp_type = ExperienceType.INTERACTION
+
         return Experience(
             id=ExperienceID(model.id),
             owner_id=IdentityID(model.owner_id),
             action=model.action,
-            outcome=ExperienceOutcome.SUCCESS,
-            experience_type=ExperienceType.INTERACTION,
+            outcome=outcome,
+            experience_type=exp_type,
             lesson=model.lesson,
             created_at=model.created_at,
+            updated_at=getattr(
+                model, "updated_at", None
+            ),
         )
 
     @staticmethod
@@ -58,8 +75,10 @@ class SQLiteExperienceRepository(ExperienceRepository):
             owner_id=str(experience.owner_id),
             action=experience.action,
             result=experience.outcome.value,
+            experience_type=experience.experience_type.value,
             lesson=experience.lesson,
             created_at=experience.created_at,
+            updated_at=experience.updated_at,
         )
 
     # --------------------------------------------------
