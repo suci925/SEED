@@ -18,8 +18,8 @@ from app.domain.experience import (
     ExperienceType,
 )
 
-from app.infrastructure.llm.deepseek_client import (
-    DeepSeekClient,
+from app.infrastructure.llm.base import (
+    LLMProvider,
 )
 
 from app.infrastructure.obsidian.vault import (
@@ -54,7 +54,7 @@ class AgentOrchestrator:
 
     def __init__(
         self,
-        llm: DeepSeekClient,
+        llm: LLMProvider,
         vault: ObsidianVault,
         *,
         memory_repo: type[MemoryRepository] | None = None,

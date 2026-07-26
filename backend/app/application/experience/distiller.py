@@ -12,8 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from app.infrastructure.llm.deepseek_client import (
-    DeepSeekClient,
+from app.infrastructure.llm.base import (
+    LLMProvider,
 )
 
 from app.infrastructure.obsidian.vault import (
@@ -32,7 +32,7 @@ class ExperienceDistiller:
 
     def __init__(
         self,
-        llm: DeepSeekClient,
+        llm: LLMProvider,
         vault: ObsidianVault,
     ) -> None:
         self._llm = llm

@@ -7,15 +7,38 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     DATABASE_URL: str = "sqlite+aiosqlite:///./seed.db"
 
-    # DeepSeek LLM 配置 (OpenAI 兼容)
+    # ==========================================
+    # LLM Provider 配置
+    # 支持的供应商：deepseek / qwen / moonshot / openai / claude
+    # ==========================================
+    LLM_PROVIDER: str = "deepseek"
+
+    # DeepSeek (国内, OpenAI 兼容)
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_MODEL: str = "deepseek-v4-pro"
 
-    # Obsidian 仓库路径
+    # 通义千问 Qwen (国内, OpenAI 兼容)
+    QWEN_API_KEY: str = ""
+    QWEN_MODEL: str = "qwen-plus"
+
+    # Moonshot Kimi (国内, OpenAI 兼容)
+    MOONSHOT_API_KEY: str = ""
+    MOONSHOT_MODEL: str = "kimi-k2.6"
+
+    # OpenAI (国外)
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o"
+
+    # Anthropic Claude (国外)
+    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = "claude-opus-4-8"
+
+    # ==========================================
+    # Obsidian
+    # ==========================================
     OBSIDIAN_VAULT_PATH: str = ""
 
     class Config:
-        # 指定加载同级目录下的 .env 文件
         env_file = ".env"
         env_file_encoding = "utf-8"
 

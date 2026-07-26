@@ -21,8 +21,8 @@ from app.core.types import IdentityID
 
 from app.core.config import settings
 
-from app.infrastructure.llm.deepseek_client import (
-    DeepSeekClient,
+from app.infrastructure.llm.factory import (
+    create_llm_provider,
 )
 
 from app.infrastructure.obsidian.vault import (
@@ -270,19 +270,13 @@ async def chat(request: ChatRequest):
     # Lazy-init agent on first request
     if app_ctx.agent is None:
 
-        if not settings.DEEPSEEK_API_KEY:
+        try:
+            llm = create_llm_provider()
+        except ValueError as e:
             raise HTTPException(
                 status_code=500,
-                detail=(
-                    "DEEPSEEK_API_KEY not configured. "
-                    "Set it in .env file."
-                ),
+                detail=str(e),
             )
-
-        llm = DeepSeekClient(
-            api_key=settings.DEEPSEEK_API_KEY,
-            model=settings.DEEPSEEK_MODEL,
-        )
 
         vault = app_ctx.vault
 

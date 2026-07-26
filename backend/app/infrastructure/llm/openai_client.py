@@ -1,63 +1,69 @@
 """
-DeepSeek API Client.
+Unified OpenAI-Compatible LLM Client.
 
-Uses the OpenAI-compatible DeepSeek API
-to provide LLM services for the Seed agent.
+Works with any OpenAI-compatible API provider:
+DeepSeek, Qwen (通义千问), Moonshot (Kimi), OpenAI, etc.
 """
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
-
-# Load .env if pydantic-settings hasn't done it yet
-_env_path = Path(__file__).resolve().parents[3] / ".env"
-if _env_path.exists() and not os.environ.get("DEEPSEEK_API_KEY"):
-    try:
-        from dotenv import load_dotenv
-        load_dotenv(_env_path)
-    except ImportError:
-        pass
 
 from openai import OpenAI, AsyncOpenAI
 
 from app.infrastructure.llm.base import LLMProvider
 
 
-DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+# Well-known OpenAI-compatible endpoints
+PROVIDER_ENDPOINTS = {
+    "deepseek": {
+        "base_url": "https://api.deepseek.com",
+        "default_model": "deepseek-v4-pro",
+    },
+    "qwen": {
+        "base_url": (
+            "https://dashscope.aliyuncs.com/"
+            "compatible-mode/v1"
+        ),
+        "default_model": "qwen-plus",
+    },
+    "moonshot": {
+        "base_url": "https://api.moonshot.cn/v1",
+        "default_model": "kimi-k2.6",
+    },
+    "openai": {
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-4o",
+    },
+}
 
 
-class DeepSeekClient(LLMProvider):
+class OpenAIClient(LLMProvider):
     """
-    Wraps the DeepSeek API (OpenAI-compatible)
-    for Seed.
+    Unified client for any OpenAI-compatible API.
 
-    Provides sync and async access to DeepSeek
-    models with built-in error handling.
+    Supports DeepSeek, Qwen, Moonshot, OpenAI, and
+    any provider with an OpenAI-compatible endpoint.
     """
 
     def __init__(
         self,
-        api_key: str | None = None,
+        api_key: str,
+        *,
+        base_url: str = "https://api.deepseek.com",
         model: str = "deepseek-v4-pro",
         max_tokens: int = 4096,
-        base_url: str = DEEPSEEK_BASE_URL,
     ) -> None:
         self._model = model
         self._max_tokens = max_tokens
 
-        resolved_key = api_key or os.environ.get(
-            "DEEPSEEK_API_KEY", ""
-        )
-
         self._sync = OpenAI(
-            api_key=resolved_key,
+            api_key=api_key,
             base_url=base_url,
         )
 
         self._async = AsyncOpenAI(
-            api_key=resolved_key,
+            api_key=api_key,
             base_url=base_url,
         )
 
@@ -67,12 +73,7 @@ class DeepSeekClient(LLMProvider):
 
     @property
     def model(self) -> str:
-        """DeepSeek model ID in use."""
         return self._model
-
-    @model.setter
-    def model(self, value: str) -> None:
-        self._model = value
 
     # --------------------------------------------------
     # Sync API
@@ -85,10 +86,6 @@ class DeepSeekClient(LLMProvider):
         system: str | None = None,
         max_tokens: int | None = None,
     ) -> str:
-        """
-        Send a single user message and get a response.
-        """
-
         messages: list[dict[str, str]] = []
 
         if system:
@@ -119,10 +116,6 @@ class DeepSeekClient(LLMProvider):
         system: str | None = None,
         max_tokens: int | None = None,
     ) -> str:
-        """
-        Async version of chat.
-        """
-
         messages: list[dict[str, str]] = []
 
         if system:
@@ -142,10 +135,6 @@ class DeepSeekClient(LLMProvider):
 
         return response.choices[0].message.content or ""
 
-    # --------------------------------------------------
-    # Multi-turn conversation
-    # --------------------------------------------------
-
     async def conversation(
         self,
         messages: list[dict[str, Any]],
@@ -153,10 +142,6 @@ class DeepSeekClient(LLMProvider):
         system: str | None = None,
         max_tokens: int | None = None,
     ) -> str:
-        """
-        Send a multi-turn conversation and get a response.
-        """
-
         full_messages: list[dict[str, Any]] = []
 
         if system:
@@ -174,10 +159,6 @@ class DeepSeekClient(LLMProvider):
 
         return response.choices[0].message.content or ""
 
-    # --------------------------------------------------
-    # Chat with context (for Agent use)
-    # --------------------------------------------------
-
     async def chat_with_context(
         self,
         message: str,
@@ -185,14 +166,6 @@ class DeepSeekClient(LLMProvider):
         *,
         system: str | None = None,
     ) -> str:
-        """
-        Send a message with retrieved context.
-
-        This is the primary method the Agent will use:
-        it prepends retrieved knowledge from Obsidian
-        or other sources before the user's message.
-        """
-
         if context:
             full_message = (
                 "## 相关上下文\n\n"

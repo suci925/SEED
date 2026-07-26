@@ -14,8 +14,10 @@ from anthropic import (
     AsyncAnthropic,
 )
 
+from app.infrastructure.llm.base import LLMProvider
 
-class ClaudeClient:
+
+class ClaudeClient(LLMProvider):
     """
     Wraps the Anthropic SDK for Seed.
 
