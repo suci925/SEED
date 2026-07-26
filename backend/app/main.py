@@ -61,6 +61,10 @@ from app.application.experience.distiller import (
     ExperienceDistiller,
 )
 
+from app.application.evolution.loop import (
+    EvolutionLoop,
+)
+
 from app.application.skills.manager import (
     SkillManager,
 )
@@ -235,6 +239,28 @@ async def get_graph(
     }
 
 
+@app.post("/evolution")
+async def trigger_evolution(owner_id: str = "default-user"):
+    """Trigger a full evolution cycle manually."""
+    if app_ctx.vault is None:
+        raise HTTPException(status_code=503, detail="Vault not loaded")
+    try:
+        llm = create_llm_provider()
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    async with AsyncSessionFactory() as session:
+        loop = EvolutionLoop(llm=llm, vault=app_ctx.vault, experience_repo=SQLiteExperienceRepository)
+        result = await loop.run(session=session, owner_id=IdentityID(owner_id))
+    return {
+        "cycle": result.cycle,
+        "notes_reviewed": result.notes_reviewed,
+        "decayed_edges": result.decayed_edges,
+        "reflection_summary": result.reflection.summary if result.reflection else "",
+        "patterns": result.reflection.patterns if result.reflection else [],
+        "note_path": str(result.note_path) if result.note_path else None,
+    }
+
+
 @app.get("/history")
 async def list_history(
     limit: int = 20,
@@ -302,6 +328,11 @@ async def chat(request: ChatRequest):
             experience_distiller=ExperienceDistiller(
                 llm=llm,
                 vault=vault,
+            ),
+            evolution_loop=EvolutionLoop(
+                llm=llm,
+                vault=vault,
+                experience_repo=SQLiteExperienceRepository,
             ),
         )
 
