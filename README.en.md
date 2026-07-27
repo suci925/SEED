@@ -117,19 +117,40 @@ What grows is not just the knowledge base. It is the intelligence itself.
 
 ## Quick Start
 
-```bash
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
-alembic upgrade head
-uvicorn app.main:app --reload
-```
+### Prerequisites
+
+- Python 3.12+
+- [Obsidian](https://obsidian.md) (required — Seed uses Obsidian as long-term memory)
+- An LLM API Key (recommended: DeepSeek, free credits on signup)
+
+### One-command Setup
 
 ```bash
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "I prefer VS Code over WebStorm"}'
-# → memory_saved: true, memory_category: "preference"
+# 1. Clone
+git clone https://github.com/suci925/SEED.git
+cd SEED/backend
+
+# 2. Install
+pip install -r requirements.txt
+
+# 3. Configure
+cp .env.example .env
+# Edit .env, fill in your API Key and Obsidian vault path:
+#   DEEPSEEK_API_KEY=sk-xxx
+#   OBSIDIAN_VAULT_PATH=/path/to/your/vault
+
+# 4. Initialize database
+alembic upgrade head
+
+# 5. Launch 🚀
+python seed.py
+```
+
+### Or start the API server only
+
+```bash
+cd backend
+uvicorn app.main:app --reload
 ```
 
 ---

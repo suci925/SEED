@@ -129,19 +129,48 @@ Relationship: 伙伴
 
 ## 快速开始
 
+### 前置条件
+
+- Python 3.12+
+- [Obsidian](https://obsidian.md)（必需，Seed 用 Obsidian 作为长期记忆）
+- 一个 LLM API Key（推荐 DeepSeek，国内可用，注册即送额度）
+
+### 一键部署
+
+```bash
+# 1. 克隆
+git clone https://github.com/suci925/SEED.git
+cd SEED/backend
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 3. 配置
+cp .env.example .env
+# 编辑 .env，填入你的 API Key 和 Obsidian 仓库路径：
+#   DEEPSEEK_API_KEY=sk-xxx
+#   OBSIDIAN_VAULT_PATH=C:/path/to/your/vault
+
+# 4. 初始化数据库
+alembic upgrade head
+
+# 5. 启动 🚀
+python seed.py
+```
+
+### 也可以单独启动后端
+
 ```bash
 cd backend
-pip install -r requirements.txt
-cp .env.example .env  # 配置 API Key
-alembic upgrade head
 uvicorn app.main:app --reload
 ```
+
+然后浏览器访问 `http://localhost:8000`，或：
 
 ```bash
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "我喜欢 VS Code"}'
-# → memory_saved: true, memory_category: "preference"
+  -d '{"message": "你好，我是小明"}'
 ```
 
 ---
