@@ -9,3 +9,5 @@ anthropic
 openai
 obsidianmd-parser
 searchpin
+rich
+aiosqlite
